@@ -45,27 +45,34 @@ END = False
 x = 0
 while END == False:
     p = x * nblocks
-    
-    ws.send('{"jsonrpc": "2.0", "method": "hls_getNewestBlocks", "params": [' + '"' + str(hex(nblocks)) + '"' + ',' + '"' + str(hex(p)) + '"' + ',"0x","0x","1"],'+id_rnd()+'}')
+    ws.send('{"jsonrpc": "2.0", "method": "hls_getNewestBlocks", "params": [' + '"' + hex(nblocks) + '"' + ',' + '"' + hex(p) + '"' + ',"0x","0x",true],'+id_rnd()+'}')
     result =  ws.recv()
     block = json.loads(result)
     len_block = len(block['result'])
     if len_block > 0:
         for y in range (0,len_block):
             for z in range (0,len(block['result'][y]['transactions'])):
-                blockHash = block['result'][y]['transactions'][z]['blockHash']
-                blockNumber = block['result'][y]['transactions'][z]['blockNumber']
-                from_add = block['result'][y]['transactions'][z]['from']
                 to_add = block['result'][y]['transactions'][z]['to']
-                if DEBUG:
-                    print('blockHash:',blockHash,' blockNumber: ',blockNumber)
-                if from_add not in wallets:
-                    wallets.append(from_add)
                 if to_add not in wallets:
                     wallets.append(to_add)
-        if DEBUG:
-            print(x)
+                    
+            for z in range (0,len(block['result'][y]['receiveTransactions'])):
+                to_add = block['result'][y]['receiveTransactions'][z]['to']
+                if to_add not in wallets:
+                    wallets.append(to_add)
+
+            for z in range (0,len(block['result'][y]['rewardBundle'])):
+                for r1 in range (0,len(block['result'][y]['rewardBundle']['rewardType1'])):
+                    reward1_add = block['result'][y]['rewardBundle']['rewardType1']
+    
+                for r2 in range (0,len(block['result'][y]['rewardBundle']['rewardType2']['proof'])):
+                    reward2_add = block['result'][y]['rewardBundle']['rewardType2']['proof'][r2]['recipientNodeWalletAddress']
+                    if reward2_add not in wallets:
+                        wallets.append(reward2_add)
+ 
         x = x + 1
+
+    
     else:
         END = True
         print('wallet list completed!')

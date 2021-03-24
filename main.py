@@ -17,7 +17,6 @@ myserver = "ws://" + input('Insert the IP of the node: ')
 serverport = "30304"
 server = myserver+":"+serverport
 
-
 def ws_con():
     global ws
     try:
@@ -27,7 +26,6 @@ def ws_con():
     except:
         error[0] = "Unable to connect to " + server
         
-
 def ws_close():
     try:
         ws.close()
@@ -39,7 +37,8 @@ def id_rnd():
     idr= '"id":'+str(idr)
     return idr
 
-DEBUG = True
+DEBUG = False
+FULL_SEARCH = False
 
 wallets = []
 balances = []
@@ -79,36 +78,39 @@ while END == False:
                             to_add = block['result']['transactions'][z]['to']
                             if to_add not in wallets:
                                 wallets.append(to_add)
-                                
-                        for z in range (0,len(block['result']['receiveTransactions'])):
-                            to_add = block['result']['receiveTransactions'][z]['to']
-                            if to_add not in wallets:
-                                wallets.append(to_add)
 
-                        for z in range (0,len(block['result']['rewardBundle'])):
-                            for r1 in range (0,len(block['result']['rewardBundle']['rewardType1'])):
-                                reward1_add = block['result']['rewardBundle']['rewardType1']
-                
-                            for r2 in range (0,len(block['result']['rewardBundle']['rewardType2']['proof'])):
-                                reward2_add = block['result']['rewardBundle']['rewardType2']['proof'][r2]['recipientNodeWalletAddress']
-                                if reward2_add not in wallets:
-                                    wallets.append(reward2_add)
-                        timestamp = datetime.datetime.fromtimestamp(int(block['result']['timestamp'],0))
-                        block_hash = block['result']['hash']
-                        block_number = int(block['result']['number'],0)
+                        if FULL_SEARCH:
+                                
+                            for z in range (0,len(block['result']['receiveTransactions'])):
+                                to_add = block['result']['receiveTransactions'][z]['to']
+                                if to_add not in wallets:
+                                    wallets.append(to_add)
+
+                            for z in range (0,len(block['result']['rewardBundle'])):
+                                for r1 in range (0,len(block['result']['rewardBundle']['rewardType1'])):
+                                    reward1_add = block['result']['rewardBundle']['rewardType1']
+                    
+                                for r2 in range (0,len(block['result']['rewardBundle']['rewardType2']['proof'])):
+                                    reward2_add = block['result']['rewardBundle']['rewardType2']['proof'][r2]['recipientNodeWalletAddress']
+                                    if reward2_add not in wallets:
+                                        wallets.append(reward2_add)
+                        
                         if DEBUG:
+                            timestamp = datetime.datetime.fromtimestamp(int(block['result']['timestamp'],0))
+                            block_hash = block['result']['hash']
+                            block_number = int(block['result']['number'],0)
                             print('Chain: ',wallets[w_count],' - ','timestamp: ',timestamp,' - ','block number: ',block_number,' - ','block hash: ',block_hash)
                 except:
                     print('Error on block', block)
   
-        else:
-            END = True
-            print('wallet list completed!')
         
     except:
         print('Error on tran_count', tran_count)
 
     w_count = w_count + 1
+    if w_count == len(wallets):
+        END = True
+        print('wallet list completed!')
    
 print('Calculating sum of wallet balances')
 

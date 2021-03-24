@@ -2,7 +2,6 @@
 
 import os
 import datetime
-from datetime import timezone
 import time
 import json
 import random

@@ -10,7 +10,6 @@ import websocket
 from websocket import create_connection
 
 global server
-global error
 
 myserver = "ws://" + input('Insert the IP of the node: ')
 serverport = "30304"
@@ -56,8 +55,6 @@ def id_rnd():
     idr= '"id":'+str(idr)
     return idr
 
-
-
 data = read_data()
 if data != None:
     start_time = data['start_time']
@@ -76,12 +73,6 @@ if data != None:
 else:
     print('Full sync required!')
     FULL_SYNC = True    
-
-
-
-
-
-
 
 if FULL_SYNC:
     wallets = []
@@ -145,7 +136,6 @@ if FULL_SYNC:
                                 print('Chain: ',wallets[w_count],' - ','timestamp: ',timestamp,' - ','block number: ',block_number,' - ','block hash: ',block_hash)
                     except:
                         print('Error on block', block)
-      
             
         except:
             print('Error on tran_count', tran_count)
@@ -200,16 +190,11 @@ else:
                 print('timestamp: ',timestamp,' - ','block number: ',block_number,' - ','block hash: ',block_hash)
             x = x + 1
             ws_close()
-
         
         else:
             END = True
             print('wallet list completed!')
-        
-        
-
-
-
+ 
 print('Calculating sum of wallet balances')
 balances = []
 for w in range(0, len(wallets)):
@@ -230,5 +215,4 @@ for w in range(0, len(wallets)):
 end_time = datetime.datetime.now()
 circ_supply = sum(balances)/1000000000000000000
 print("HLS Circulanting Supply:", circ_supply)
-write_data()   
-
+write_data()

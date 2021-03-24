@@ -12,7 +12,6 @@ from websocket import create_connection
 
 global server
 global error
-error = [None] * 5
 
 myserver = "ws://" + input('Insert the IP of the node: ')
 serverport = "30304"
@@ -35,9 +34,6 @@ def read_data():
     try:
         with open('wallets.json') as json_file:
             data = json.load(json_file)
-            print(data['start_time'])
-            print(data['end_time'])
-            print(data['wallets'][5])
     except:
         data = None
     return data
@@ -46,7 +42,6 @@ def ws_con():
     global ws
     try:
         ws = create_connection(server)
-        error[0] = None
         return ws
     except:
         print('Unable to connect to ' + server)
